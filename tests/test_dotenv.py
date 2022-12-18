@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from functools import wraps
 
-import get_base_dir
+from get_base_dir import *
 from dotenv import load_dotenv
 
 
@@ -17,8 +17,8 @@ class TestDotenv(unittest.TestCase):
         затем удаляет его."""
 
         @wraps(func)
-        def wrapper(*args, **kwargs):
-            path = Path(__file__).parent / '.env'
+        def wrapper(self, *args, **kwargs):
+            path = Path(__file__).parent.parent / '.env'
 
             # Создание .env файла с тестовым значением
             with open(path, 'w') as file:
@@ -26,8 +26,9 @@ class TestDotenv(unittest.TestCase):
 
             # Устанока локальных переменных из .env файла
             load_dotenv()
+
             # Тестируемая функция
-            func(*args, **kwargs)
+            func(self, *args, **kwargs)
 
             # Удаление .env файла
             if path.is_file():

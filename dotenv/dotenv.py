@@ -1,6 +1,5 @@
 
 import os
-import sys
 from pathlib import Path
 
 
@@ -23,7 +22,7 @@ def load_dotenv(*, sep: str = '=') -> None:
     """
 
     # Путь до файла каталога вызвавшего метод
-    path = Path(sys.argv[0]).parent / '.env'
+    path = Path(__file__).parent.parent / '.env'
 
     # Если существует ".env" файл по указанному пути
     if path.is_file():
