@@ -13,8 +13,7 @@ class TestDotenv(unittest.TestCase):
 
     @staticmethod
     def with_env_file(func):
-        """Создает .env файл со значениями, для тестирования,
-        затем удаляет его."""
+        """Создает .env файл со значениями, после тестирования удаляет его."""
 
         @wraps(func)
         def wrapper(self, *args, **kwargs):
@@ -27,12 +26,14 @@ class TestDotenv(unittest.TestCase):
             # Устанока локальных переменных из .env файла
             load_dotenv()
 
-            # Тестируемая функция
-            func(self, *args, **kwargs)
+            try:
+                # Тестируемая функция
+                func(self, *args, **kwargs)
+            finally:
+                # Удаление .env файла
+                if path.is_file():
+                    os.remove(path)
 
-            # Удаление .env файла
-            if path.is_file():
-                os.remove(path)
         return wrapper
 
     @with_env_file  
