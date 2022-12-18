@@ -39,4 +39,3 @@ def load_dotenv(*, sep: str = '=') -> None:
 
 if __name__ == '__main__':
     load_dotenv()
-    print(os.getenv('ABC'))
