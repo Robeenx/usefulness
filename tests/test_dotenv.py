@@ -8,38 +8,46 @@ from get_base_dir import *
 from dotenv import load_dotenv
 
 
+# Путь для тестовго .env файла (в тестовом каталоге)
+PATH = Path(__file__).parent / '.env'
+
+# Тестовое значение
+DATA = {
+    'key': 'TEST',
+    'val': 'abcd',
+}
+
+
+def env_file_for_tests(func):
+    """Создание тестовго .env файла, тестирование
+    функции, удаление созданного ранее .env файла"""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        # Создание .env файла
+        with open(PATH, 'w') as file:
+            file.write('='.join(DATA.values()))
+
+        try:
+            # Тестируемая функция
+            load_dotenv(path=PATH)
+            func(*args, **kwargs)
+        finally:
+            # Удаление .env файла
+            if PATH.is_file():
+                os.remove(PATH)
+
+    return wrapper
+
+
 class TestDotenv(unittest.TestCase):
     """Тестирование переменных окружения"""
 
-    @staticmethod
-    def with_env_file(func):
-        """Создает .env файл со значениями, после тестирования удаляет его."""
-
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            path = Path(__file__).parent.parent / '.env'
-
-            # Создание .env файла с тестовым значением
-            with open(path, 'w') as file:
-                file.write('TEST = 123456789')
-
-            # Устанока локальных переменных из .env файла
-            load_dotenv()
-
-            try:
-                # Тестируемая функция
-                func(self, *args, **kwargs)
-            finally:
-                # Удаление .env файла
-                if path.is_file():
-                    os.remove(path)
-
-        return wrapper
-
-    @with_env_file  
+    @env_file_for_tests
     def test_get_enviroments_variable(self):
         """Получение значения из переменной окружения"""
-        self.assertEqual(os.getenv('TEST'), '123456789')
+        self.assertEqual(os.getenv(DATA.get('key')), DATA.get('val'))
 
 
 if __name__ == '__main__':
