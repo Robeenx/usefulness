@@ -3,7 +3,11 @@ import os
 from pathlib import Path
 
 
-def load_dotenv(*, sep: str = '=') -> None:
+# Путь до корневого каталога
+PATH = Path('.') / '.env'
+
+
+def load_dotenv(*_, path: Path = PATH, sep: str = '=') -> None:
     """Загружает данные из ".env" файла и создает на их основе переменные окружения.
     * Файл ".env" должен находиться в одном каталоге с файлом, вызвавшем его.
     * Ключи от значений отделяются знаком "=".
@@ -20,9 +24,6 @@ def load_dotenv(*, sep: str = '=') -> None:
     >>> os.getenv('ABC')
     >>> 123 = 456
     """
-
-    # Путь до файла каталога вызвавшего метод
-    path = Path(__file__).parent.parent / '.env'
 
     # Если существует ".env" файл по указанному пути
     if path.is_file():
